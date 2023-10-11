@@ -164,4 +164,10 @@ public class PlayerManager : NetworkBehaviour
         activeBlind = true;
     }
 
+
+    public void _Fire()
+    {
+        this._hunterController.Fire();
+    }
+
 }

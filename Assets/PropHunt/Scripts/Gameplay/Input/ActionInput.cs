@@ -48,7 +48,12 @@ public class ActionInput : MonoBehaviour
     public void OnFire1(CallbackContext context)
     {
         if (!context.performed) return;
-        _currentClassInput.Fire1();
+        // _currentClassInput.Fire1();
+        if (_playerManager.isHunter.Value)
+        {
+            Debug.Log("C'est le hunter. Il faut tirer !");
+            _playerManager._Fire();
+        }
     }
 
     public void OnFire2(CallbackContext context)
