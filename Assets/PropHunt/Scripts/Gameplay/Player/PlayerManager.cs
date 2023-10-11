@@ -1,9 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class PlayerManager : NetworkBehaviour
 {
@@ -16,6 +18,13 @@ public class PlayerManager : NetworkBehaviour
     public Animator _animator;
     [SerializeField] PropController _propController;
     [SerializeField] HunterController _hunterController;
+
+    private int lifePoint = 1000;
+    public TMP_Text lifePrinting;
+
+    public GameObject myBlackScreen;
+    private bool activeBlind = false;
+    private bool isInitialaize = false;
 
     private void Awake()
     {
@@ -34,6 +43,34 @@ public class PlayerManager : NetworkBehaviour
             _actionInput = GetComponent<ActionInput>();
         }
         if (Camera == null) Camera = GetComponentInChildren<Camera>(true);
+
+    }
+
+
+    private void Start()
+    {
+        // StartCoroutine(wait());
+    }
+
+    private void Update()
+    {
+        if (ActiveOrNotBlind() && !activeBlind && isHunter.Value && IsOwner)
+        {
+
+            myBlackScreen.SetActive(true);
+            Debug.Log("Wait 10 sec");
+            StartCoroutine(GetBlind());
+        }
+
+
+        if (SceneManager.GetActiveScene().name == "Game")
+        {
+            this.SetUpLifePoint();
+
+            //this.UpdateLifePoint(0);
+        }
+
+        
     }
     public override void OnNetworkSpawn()
     {
@@ -79,4 +116,52 @@ public class PlayerManager : NetworkBehaviour
         Cursor.lockState = isLocked? CursorLockMode.Locked : CursorLockMode.None;
         _movementController.cursorLocked = isLocked;
     }
+
+
+    public void SetUpLifePoint()
+    {
+        this.lifePoint = 1000;
+        GameObject[] g = GameObject.FindGameObjectsWithTag("Scoring");
+        Debug.Log(g.Length);
+        if (g.Length > 0)
+        {
+            this.lifePrinting = g[0].GetComponent<TMP_Text>();
+            this.lifePrinting.text = "Life Point: " + lifePoint.ToString();
+            this.isInitialaize = true;
+        } else
+        {
+            Debug.Log("Nothing found !");
+        }
+        
+        
+    }
+
+
+    // Close eye
+
+
+    bool ActiveOrNotBlind()
+    {
+
+        Scene myscene = SceneManager.GetActiveScene();
+
+        if (myscene.name == "Game")
+        {
+            Debug.Log("In Game !");
+            return true;
+        }
+        Debug.Log("Not In Game !");
+        return false;
+    }
+
+
+    public IEnumerator GetBlind()
+    {
+
+        yield return new WaitForSeconds(10);
+        myBlackScreen.SetActive(false);
+        Debug.Log("Not Blind");
+        activeBlind = true;
+    }
+
 }

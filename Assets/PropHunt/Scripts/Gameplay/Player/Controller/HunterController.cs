@@ -10,9 +10,9 @@ public class HunterController : ClassController
     public GameObject projectile;
 
     public GameObject myBlackScreen;
-    public float blindTime = 10;
-
     private bool activeBlind = false;
+
+    private PlayerManager playerManager;
 
 
     private void Start()
@@ -42,18 +42,14 @@ public class HunterController : ClassController
         yield return new WaitForSeconds(10);
         myBlackScreen.SetActive(false);
         Debug.Log("Not Blind");
+        activeBlind = true;
     }
 
 
     private void Update()
     {
 
-        if (ActiveOrNotBlind() && myBlackScreen.activeInHierarchy)
-        {
-            Debug.Log("Wait 10 sec");
-
-            StartCoroutine(GetBlind());
-        }
+        
         
     }
 
@@ -63,10 +59,6 @@ public class HunterController : ClassController
         _camera.transform.SetParent(transform);
         _camera.transform.localPosition = new Vector3(2.5f, 1.1f, 1.2f);
 
-        if (ActiveOrNotBlind())
-        {
-            myBlackScreen.SetActive(true);
-        }
 
         ResetAnimator();
     }
