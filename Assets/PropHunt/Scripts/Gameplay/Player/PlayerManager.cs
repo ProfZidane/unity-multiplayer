@@ -120,9 +120,9 @@ public class PlayerManager : NetworkBehaviour
 
     public void SetUpLifePoint()
     {
-        this.lifePoint = 1000;
+        // this.lifePoint = 1000;
         GameObject[] g = GameObject.FindGameObjectsWithTag("Scoring");
-        Debug.Log(g.Length);
+        // Debug.Log(g.Length);
         if (g.Length > 0)
         {
             this.lifePrinting = g[0].GetComponent<TMP_Text>();
@@ -168,6 +168,24 @@ public class PlayerManager : NetworkBehaviour
     public void _Fire()
     {
         this._hunterController.Fire();
+    }
+
+
+    public int getLifePoints()
+    {
+        return this.lifePoint;
+    }
+
+    public void setLifePoints(int value)
+    {
+        this.lifePoint = value;
+        GameObject[] g = GameObject.FindGameObjectsWithTag("Scoring");
+
+        //if (g.Length > 0)
+        //{
+        //    this.lifePrinting = g[0].GetComponent<TMP_Text>();
+        //    this.lifePrinting.text = "Life Point: " + lifePoint.ToString();
+        //}
     }
 
 }

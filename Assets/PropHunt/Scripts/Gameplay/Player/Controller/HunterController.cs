@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
+using Unity.Netcode.Components;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using static UnityEngine.InputSystem.InputAction;
@@ -13,13 +15,18 @@ public class HunterController : ClassController
     private bool activeBlind = false;
 
     private PlayerManager playerManager;
-
+    private bool isFire = false;
 
     private void Start()
     {
             
     }
 
+
+    void OnNetworkSpawn()
+    {
+
+    }
 
     bool ActiveOrNotBlind()
     {
@@ -68,10 +75,13 @@ public class HunterController : ClassController
         gameObject.SetActive(false);
     }
 
-    public void Fire()
+    [ServerRpc(RequireOwnership = false)]
+    public void OnFireServerRpc()
     {
+        this.isFire = true;
+        this.projectile.SetActive(true);
         var transform = this.transform;
-        var newProjectile = Instantiate(projectile);
+        var newProjectile = Instantiate(this.projectile);
         newProjectile.transform.position = transform.position + transform.forward * 0.6f;
         newProjectile.transform.rotation = transform.rotation;
         const int size = 1;
@@ -80,6 +90,24 @@ public class HunterController : ClassController
         newProjectile.GetComponent<Rigidbody>().AddForce(transform.forward * 20f, ForceMode.Impulse);
         newProjectile.GetComponent<MeshRenderer>().material.color =
         new Color(Random.value, Random.value, Random.value, 1.0f);
+    }
+    
+
+    [ClientRpc]
+    public void OnFireClientRpc()
+    {
+          if (IsOwner && this.isFire)
+        {
+
+        }
+    }
+
+
+    public void Fire()
+    {
+
+        this.OnFireServerRpc();
+
     }
 
 }
