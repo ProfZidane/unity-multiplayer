@@ -19,6 +19,8 @@ public class PlayerManager : NetworkBehaviour
     [SerializeField] PropController _propController;
     [SerializeField] HunterController _hunterController;
 
+
+    private NetworkVariable<int> _lifePoint = new NetworkVariable<int>();
     private int lifePoint = 1000;
     public TMP_Text lifePrinting;
 
@@ -85,6 +87,12 @@ public class PlayerManager : NetworkBehaviour
             _movementController.SetAnimator(GetComponent<Animator>());
             return;
         }
+
+        if (IsServer)
+        {
+            this._lifePoint.Value = this.lifePoint;
+        }
+
         Camera.gameObject.SetActive(false);
     }
 
@@ -127,6 +135,8 @@ public class PlayerManager : NetworkBehaviour
         {
             this.lifePrinting = g[0].GetComponent<TMP_Text>();
             this.lifePrinting.text = "Life Point: " + lifePoint.ToString();
+            Debug.Log(this.lifePoint);
+
             this.isInitialaize = true;
         } else
         {
@@ -181,11 +191,11 @@ public class PlayerManager : NetworkBehaviour
         this.lifePoint = value;
         GameObject[] g = GameObject.FindGameObjectsWithTag("Scoring");
 
-        //if (g.Length > 0)
-        //{
-        //    this.lifePrinting = g[0].GetComponent<TMP_Text>();
-        //    this.lifePrinting.text = "Life Point: " + lifePoint.ToString();
-        //}
+        /*if (g.Length > 0)
+        {
+            this.lifePrinting = g[0].GetComponent<TMP_Text>();
+            this.lifePrinting.text = "Life Point: " + lifePoint.ToString();
+        }*/
     }
 
 }

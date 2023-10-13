@@ -75,10 +75,30 @@ public class HunterController : ClassController
         gameObject.SetActive(false);
     }
 
-    [ServerRpc(RequireOwnership = false)]
+
+
+    [ServerRpc]
     public void OnFireServerRpc()
     {
-        this.isFire = true;
+        if (!isFire)
+        {
+
+            this.isFire = true;
+            OnFireClientRpc();
+
+        }
+    }
+    
+
+    [ClientRpc]
+    public void OnFireClientRpc()
+    {
+          if (IsOwner && this.isFire)
+        {
+            this.isFire = false;
+        }
+
+
         this.projectile.SetActive(true);
         var transform = this.transform;
         var newProjectile = Instantiate(this.projectile);
@@ -90,16 +110,6 @@ public class HunterController : ClassController
         newProjectile.GetComponent<Rigidbody>().AddForce(transform.forward * 20f, ForceMode.Impulse);
         newProjectile.GetComponent<MeshRenderer>().material.color =
         new Color(Random.value, Random.value, Random.value, 1.0f);
-    }
-    
-
-    [ClientRpc]
-    public void OnFireClientRpc()
-    {
-          if (IsOwner && this.isFire)
-        {
-
-        }
     }
 
 

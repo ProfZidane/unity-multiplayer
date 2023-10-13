@@ -28,7 +28,7 @@ public class FireControl : NetworkBehaviour
         if (other.TryGetComponent<PropController>(out PropController prop))
         {
             Debug.Log("Prop found ! -10 points");
-            Debug.Log(_playerManager.getLifePoints() - 10);
+            // Debug.Log(_playerManager.getLifePoints() - 10);
             _playerManager.setLifePoints(_playerManager.getLifePoints() - 10);
         } else
         {
