@@ -3,9 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using Unity.Netcode;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+
 
 public class PlayerManager : NetworkBehaviour
 {
@@ -32,6 +34,7 @@ public class PlayerManager : NetworkBehaviour
     {
         _movementController = GetComponent<MovementController>();
         isHunter.OnValueChanged += SwapTeam;
+        this._lifePoint.OnValueChanged += LifePointChangement;
         if (_propController == null)
         {
             _propController = GetComponentInChildren<PropController>();
@@ -67,7 +70,7 @@ public class PlayerManager : NetworkBehaviour
 
         if (SceneManager.GetActiveScene().name == "Game")
         {
-            this.SetUpLifePoint();
+            // this.SetUpLifePoint();
 
             //this.UpdateLifePoint(0);
         }
@@ -126,25 +129,7 @@ public class PlayerManager : NetworkBehaviour
     }
 
 
-    public void SetUpLifePoint()
-    {
-        // this.lifePoint = 1000;
-        GameObject[] g = GameObject.FindGameObjectsWithTag("Scoring");
-        // Debug.Log(g.Length);
-        if (g.Length > 0)
-        {
-            this.lifePrinting = g[0].GetComponent<TMP_Text>();
-            this.lifePrinting.text = "Life Point: " + lifePoint.ToString();
-            Debug.Log(this.lifePoint);
 
-            this.isInitialaize = true;
-        } else
-        {
-            Debug.Log("Nothing found !");
-        }
-        
-        
-    }
 
 
     // Close eye
@@ -189,13 +174,49 @@ public class PlayerManager : NetworkBehaviour
     public void setLifePoints(int value)
     {
         this.lifePoint = value;
-        GameObject[] g = GameObject.FindGameObjectsWithTag("Scoring");
 
+        this.SetUpLifePoint(value);
+
+        // this._lifePoint.Value = value;
+        GameObject[] g = GameObject.FindGameObjectsWithTag("Scoring");
+        Debug.Log("Score : " + this._lifePoint.Value);
         /*if (g.Length > 0)
         {
             this.lifePrinting = g[0].GetComponent<TMP_Text>();
             this.lifePrinting.text = "Life Point: " + lifePoint.ToString();
         }*/
+    }
+
+    public void SetUpLifePoint(int value)
+    {
+        if (IsServer)
+        {
+            this._lifePoint.Value = value;
+        }
+    }
+
+    public void LifePointChangement(int previousLifePoints, int nextLifePoints)
+    {
+        if (nextLifePoints > 0)
+        {            
+            Debug.Log("N : " + nextLifePoints);
+            GameObject[] g = GameObject.FindGameObjectsWithTag("Scoring");
+            if (g.Length > 0)
+            {
+
+                g[0].GetComponent<TMP_Text>().text = "Life Point : " + nextLifePoints;
+
+                Debug.Log(g[0].GetComponent<TMP_Text>().text);
+            }
+
+            return;
+        }
+
+        EditorUtility.DisplayDialog("Game Over", "Your Prop has 0 life point. Would you want to restart ?", "Yes", "No");
+
+
+
+
     }
 
 }
